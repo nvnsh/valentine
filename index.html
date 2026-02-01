@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Be My Valentine 💘</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #ff6f91, #ff9671);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  text-align: center;
+  color: white;
+  padding: 20px;
+  width: 100%;
+  max-width: 360px;
+}
+
+h1 {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+p {
+  font-size: 16px;
+}
+
+.buttons {
+  position: relative;
+  height: 220px;
+}
+
+/* Buttons */
+button {
+  padding: 14px 28px;
+  font-size: 18px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  position: absolute;
+}
+
+/* YES */
+#yes {
+  background: #28a745;
+  color: white;
+  left: 50%;
+  top: 20px;
+  transform: translateX(-50%);
+  z-index: 3;
+}
+
+/* NO */
+#no {
+  background: #dc3545;
+  color: white;
+  left: 120px;
+  top: 150px;
+  z-index: 2;
+}
+
+#result {
+  display: none;
+}
+
+#result img {
+  width: 90%;
+  max-width: 280px;
+  border-radius: 20px;
+  margin-top: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* Special instruction button */
+#specialBtn {
+  margin-top: 15px;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 25px;
+  border: none;
+  background: #ffc107;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Final message */
+.final-msg {
+  display: none;
+  margin-top: 15px;
+  font-size: 17px;
+  font-weight: bold;
+  line-height: 1.4;
+}
+</style>
+</head>
+
+<body>
+
+<!-- QUESTION -->
+<div class="container" id="question">
+  <h1>Hey Amanpreet Kaur 💕<br>Will you be my Valentine?</h1>
+
+  <div class="buttons" id="btnArea">
+    <button id="yes">YES 💖</button>
+    <button id="no">NO 💔</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="container" id="result">
+  <h1>Yayyy! 💞</h1>
+  <p>Happy Valentine’s Day 💘</p>
+
+  <!-- PHOTO -->
+  <img src="couple.jpg" alt="Couple Photo"
+       onerror="this.src='https://via.placeholder.com/280x360?text=Your+Photo+Here'">
+
+  <!-- SPECIAL BUTTON -->
+  <button id="specialBtn">Special Instructions 😏</button>
+
+  <!-- FINAL MESSAGE -->
+  <div class="final-msg" id="finalMsg">
+    time jagah bta dio,<br>
+    and sara kharcha b tera hoga 😜
+  </div>
+</div>
+
+<script>
+const area = document.getElementById("btnArea");
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+const specialBtn = document.getElementById("specialBtn");
+const finalMsg = document.getElementById("finalMsg");
+
+let mouseX = -9999;
+let mouseY = -9999;
+
+/* Physics for NO button */
+let vx = 0;
+let vy = 0;
+
+const TRIGGER_DISTANCE = 220; // ~20 cm
+const FORCE = 5;
+const FRICTION = 0.88;
+const MAX_SPEED = 24;
+
+/* Track mouse */
+area.addEventListener("mousemove", (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+/* YES CLICK */
+yesBtn.addEventListener("click", () => {
+  document.getElementById("question").style.display = "none";
+  document.getElementById("result").style.display = "block";
+});
+
+/* SPECIAL BUTTON CLICK */
+specialBtn.addEventListener("click", () => {
+  finalMsg.style.display = "block";
+  specialBtn.style.display = "none";
+});
+
+/* Animation loop for NO */
+function animate() {
+  const areaRect = area.getBoundingClientRect();
+  const noRect = noBtn.getBoundingClientRect();
+
+  const cx = noRect.left + noRect.width / 2;
+  const cy = noRect.top + noRect.height / 2;
+
+  const dx = cx - mouseX;
+  const dy = cy - mouseY;
+  const dist = Math.hypot(dx, dy);
+
+  if (dist < TRIGGER_DISTANCE) {
+    const nx = dx / (dist || 1);
+    const ny = dy / (dist || 1);
+    vx += nx * FORCE;
+    vy += ny * FORCE;
+  }
+
+  vx = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, vx));
+  vy = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, vy));
+
+  let left = noBtn.offsetLeft + vx;
+  let top  = noBtn.offsetTop  + vy;
+
+  left = Math.max(0, Math.min(left, areaRect.width - noRect.width));
+  top  = Math.max(80, Math.min(top, areaRect.height - noRect.height));
+
+  noBtn.style.left = left + "px";
+  noBtn.style.top  = top  + "px";
+
+  vx *= FRICTION;
+  vy *= FRICTION;
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>
